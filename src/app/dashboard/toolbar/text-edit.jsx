@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -20,8 +20,10 @@ import {
   // Video,
 } from "lucide-react";
 import { DeleteIcon, ListNumberIcon } from "@/assets";
+import useFabric from "@/hooks/useFabric";
 
 export function TextEdit() {
+  const { selected } = useFabric();
   const [font, setFont] = useState("lato");
   const [fontSize, setFontSize] = useState("14");
   const [heading, setHeading] = useState("h1");
@@ -50,9 +52,27 @@ export function TextEdit() {
     { value: "h4", label: "Heading 4" },
   ];
 
+  useEffect(() => {
+    if (!selected) return;
+    console.log(font);
+    selected.set({
+      fontFamily: font,
+      fontSize: parseInt(fontSize),
+      fontWeight: format.bold ? "bold" : "normal",
+      fontStyle: format.italic ? "italic" : "normal",
+      textDecoration: `${format.underline ? "underline" : ""} ${
+        format.strikethrough ? "line-through" : ""
+      }`,
+      textAlign: alignment,
+      listType: list,
+    });
+
+    selected.canvas.renderAll();
+  }, [font, fontSize, heading, format, alignment, list, selected]);
+
   return (
     <div className="flex items-center text-gray-800 justify-center gap-2">
-      <Select value={font} onValueChange={setFont}>
+      <Select value={font} onValueChange={(value) => setFont(value)}>
         <SelectTrigger className="w-[120px]">
           <SelectValue />
         </SelectTrigger>
@@ -65,7 +85,7 @@ export function TextEdit() {
         </SelectContent>
       </Select>
 
-      <Select value={heading} onValueChange={setHeading}>
+      <Select value={heading} onValueChange={(value) => setHeading(value)}>
         <SelectTrigger className="w-[120px]">
           <SelectValue />
         </SelectTrigger>
@@ -78,7 +98,7 @@ export function TextEdit() {
         </SelectContent>
       </Select>
 
-      <Select value={fontSize} onValueChange={setFontSize}>
+      <Select value={fontSize} onValueChange={(value) => setFontSize(value)}>
         <SelectTrigger className="w-[70px]">
           <SelectValue />
         </SelectTrigger>

@@ -28,7 +28,32 @@ export const FabricProvider = ({ children }) => {
       fabricRef.current.dispose();
     };
 
+    const addSVG = (url) => {
+      fabric.loadSVGFromURL(
+        url,
+        (objects, options) => {
+          // console.log("SVG loaded:", objects, options); // Debug log
+          if (!objects || objects.length === 0) {
+            console.error("No SVG objects loaded");
+            return;
+          }
+          const svg = fabric.util.groupSVGElements(objects, options);
+          svg.set({
+            top: 60,
+            left: 60,
+            originX: "center",
+            originY: "center",
+          });
+          fabricRef.current.add(svg);
+          fabricRef.current.renderAll(); // Force render
+        },
+        (error) => {
+          console.error("SVG loading error:", error);
+        }
+      );
+    };
     initFabric();
+    addSVG("/vite.svg");
 
     return () => {
       disposeFabric();
